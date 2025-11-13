@@ -1,0 +1,35 @@
+Replace lines 78-97 in src/components/Deposit/TabDeposit.jsx with:
+
+            {/* How to Deposit Button */}
+            <div className="mb-2 bg-bg-jaya9-logo-color p-3">
+              <div className="text-white py-2 cursor-pointer flex items-center justify-center gap-2">
+                <img src={explannationImage} alt="" className="w-6 h-6" />
+                <h3 className="underline text-sm lg:text-base">
+                  {language === "en" ? "HOW To Deposit?" : "কিভাবে জমা করবেন"}
+                </h3>
+              </div>
+            </div>
+
+            {/* Verification Warning */}
+            <div className="flex flex-col lg:flex-row items-start lg:items-center gap-3 mb-2 bg-bg-jaya9-logo-color p-3">
+              <img src={warninglogo} alt="" className="w-8 h-8 flex-shrink-0" />
+              <div className="flex-1">
+                <h3 className="text-white text-sm lg:text-base">
+                  {language === "en"
+                    ? "Phone number is not verified. Please proceed with the verification process before making a deposit"
+                    : "আপনার মোবাইল নম্বরটি ভেরিফাই করা হয়নি। ডিপোজিট করার আগে ভেরিফাই পদ্ধতি অনুসরণ করে নম্বরটি ভেরিফাই করেন।"}
+                </h3>
+              </div>
+              <Link to="/jachaikoron" className="flex-shrink-0">
+                <p className="text-common-orange underline text-sm font-semibold hover:text-orange-400 transition-colors">
+                  {language === "bn" ? "যাচাই করুন" : "Verify"}
+                </p>
+              </Link>
+            </div>
+
+This will:
+1. Separate "HOW To Deposit?" into its own section
+2. Make the verification warning responsive with flex-col on mobile, flex-row on desktop
+3. Add proper spacing and sizing
+4. Make the Verify link more prominent with hover effect
+5. Ensure text wraps properly on mobile devices

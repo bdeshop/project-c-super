@@ -1,0 +1,122 @@
+/* Dynamic Theme CSS Variables */
+:root {
+  /* Header styles */
+  --header-bg-color: #001;
+  --header-text-color: #ffffff;
+  --header-font-size: 16px;
+  --logo-width: 140px;
+  --login-button-bg: #09bda2;
+  --login-button-text-color: #ffffff;
+  --signup-button-bg: #09bda2;
+  --signup-button-text-color: #ffffff;
+
+  /* Web Menu styles */
+  --web-menu-bg-color: #012b2b;
+  --web-menu-text-color: #ffffff;
+  --web-menu-font-size: 15px;
+  --web-menu-hover-color: #09bda2;
+  --web-menu-active-color: #01aea1;
+
+  /* Mobile Menu styles */
+  --mobile-menu-bg-color: #012b2b;
+  --mobile-menu-text-color: #ffffff;
+  --mobile-menu-font-size: 14px;
+  --mobile-menu-login-button-bg: #09bda2;
+  --mobile-menu-login-button-text-color: #ffffff;
+  --mobile-menu-signup-button-bg: #09bda2;
+  --mobile-menu-signup-button-text-color: #ffffff;
+
+  /* Font settings */
+  --global-font-family: "Poppins, sans-serif";
+  --global-text-color: #ffffff;
+  --heading-font-size: 24px;
+  --paragraph-font-size: 16px;
+
+  /* Footer styles */
+  --footer-bg-color: #001a1a;
+  --footer-text-color: #cccccc;
+  --footer-link-hover-color: #09bda2;
+
+  /* Custom sections */
+  --top-winners-card-bg-color: #012b2b;
+  --top-winners-card-text-color: #ffffff;
+  --upcoming-matches-card-bg-color: #012b2b;
+  --upcoming-matches-border-color: #09bda2;
+}
+
+/* Apply global font family */
+body {
+  font-family: var(--global-font-family);
+  color: var(--global-text-color);
+}
+
+/* Header styles using CSS variables */
+.dynamic-header {
+  background-color: var(--header-bg-color);
+  color: var(--header-text-color);
+  font-size: var(--header-font-size);
+}
+
+.dynamic-logo {
+  width: var(--logo-width);
+}
+
+.dynamic-login-button {
+  background-color: var(--login-button-bg);
+  color: var(--login-button-text-color);
+}
+
+.dynamic-signup-button {
+  background-color: var(--signup-button-bg);
+  color: var(--signup-button-text-color);
+}
+
+/* Web Menu styles */
+.dynamic-web-menu {
+  background-color: var(--web-menu-bg-color);
+  color: var(--web-menu-text-color);
+  font-size: var(--web-menu-font-size);
+}
+
+.dynamic-web-menu:hover {
+  color: var(--web-menu-hover-color);
+}
+
+.dynamic-web-menu-active {
+  border-bottom-color: var(--web-menu-active-color);
+}
+
+/* Footer styles */
+.dynamic-footer {
+  background-color: var(--footer-bg-color);
+  color: var(--footer-text-color);
+}
+
+.dynamic-footer-link:hover {
+  color: var(--footer-link-hover-color);
+}
+
+/* Custom sections */
+.dynamic-upcoming-match-card {
+  background-color: var(--upcoming-matches-card-bg-color);
+  border-color: var(--upcoming-matches-border-color);
+}
+
+.dynamic-top-winners-card {
+  background-color: var(--top-winners-card-bg-color);
+  color: var(--top-winners-card-text-color);
+}
+
+/* Responsive font sizes */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: var(--heading-font-size);
+}
+
+p {
+  font-size: var(--paragraph-font-size);
+}

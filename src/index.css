@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes marquee {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.bg-referral-button {
+  background: linear-gradient(to right, #0abab4, transparent);
+}
+
+
+.marquee {
+  display: flex;
+  animation: marquee 30s linear infinite;
+  width: max-content;
+  white-space: nowrap;
+}
+
+.custom-shadow {
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
+}
