@@ -89,7 +89,10 @@ const TopHeader = ({
         style={{ width: logoWidth }}
       />
 
-      <ul className="hidden lg:flex space-x-2 items-center text-white font-sans text-sm">
+      <ul
+        className="hidden lg:flex space-x-2 items-center text-white font-sans text-sm"
+        style={{ maxWidth: "1400px" }}
+      >
         <div className="flex flex-row gap-2 items-center">
           <h3 className="text-lg">{text[language].wallet}</h3>
           <span className="text-lg">

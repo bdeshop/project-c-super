@@ -51,7 +51,7 @@ export const getUserBalance = () => {
  */
 export const getUsername = () => {
   const userData = getUserData();
-  return userData?.username || null;
+  return userData?.username || userData?.name || null;
 };
 
 /**
