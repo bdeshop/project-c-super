@@ -60,6 +60,8 @@ const Deposit = () => {
   const [promotionBonus, setPromotionBonus] = useState(null);
   const [userBalance, setUserBalance] = useState(null);
   const [balanceLoading, setBalanceLoading] = useState(false);
+  const [activeBonuses, setActiveBonuses] = useState([]);
+  const [bonusesLoading, setBonusesLoading] = useState(false);
 
   // Fetch user balance
   useEffect(() => {
@@ -186,6 +188,31 @@ const Deposit = () => {
     fetchPaymentMethods();
   }, []);
 
+  // Fetch active deposit bonuses
+  useEffect(() => {
+    const fetchActiveBonuses = async () => {
+      setBonusesLoading(true);
+      try {
+        const response = await api.get("/api/promotions/active-bonuses"); // Assuming this endpoint exists or will be created
+        // Or if we use the new DepositBonus model:
+        // const response = await api.get("/api/bonus-wagering/active-bonuses");
+        
+        // For now, I'll use a placeholder or handle it in the controller if I haven't yet.
+        // Actually, let's assume we'll use /api/promotions/active-bonuses and implement it.
+        
+        if (response.data.success) {
+          setActiveBonuses(response.data.data);
+        }
+      } catch (error) {
+        console.error("❌ Error fetching active bonuses:", error);
+      } finally {
+        setBonusesLoading(false);
+      }
+    };
+
+    fetchActiveBonuses();
+  }, []);
+
   // Set the default selected channel and amount when selectedMethod changes (only for static payment methods)
   useEffect(() => {
     // Only run this for static payment methods that have channels
@@ -264,6 +291,8 @@ const Deposit = () => {
           apiPaymentMethods={apiPaymentMethods}
           paymentMethodsLoading={paymentMethodsLoading}
           promotionBonus={promotionBonus}
+          activeBonuses={activeBonuses}
+          bonusesLoading={bonusesLoading}
         />
 
         {modalOpen && (

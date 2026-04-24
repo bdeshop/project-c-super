@@ -22,30 +22,39 @@ const TabDeposit = ({
   apiPaymentMethods,
   paymentMethodsLoading,
   promotionBonus,
+  activeBonuses,
+  bonusesLoading,
 }) => {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
   // Calculate total amount with bonus only when promotion bonus is selected
   const calculateTotalAmount = () => {
-    if (!selectedAmount || !selectedBonus || selectedBonus !== "promotion")
-      return parseFloat(selectedAmount) || 0;
-
-    const amount = parseFloat(selectedAmount) || 0;
-
-    if (!promotionBonus) return amount;
-
-    const bonusValue = promotionBonus.bonus_value || 0;
-
-    if (promotionBonus.bonus_type === "fixed") {
-      return amount + bonusValue;
-    } else if (promotionBonus.bonus_type === "percentage") {
-      const bonusAmount = (amount * bonusValue) / 100;
-      const maxLimit = promotionBonus.max_bonus_limit || Infinity;
-      const actualBonus = Math.min(bonusAmount, maxLimit);
-      return amount + actualBonus;
+    // 1. Check if a DepositBonus is selected (from the new model)
+    if (selectedBonus && selectedBonus !== "promotion") {
+      const bonus = activeBonuses?.find((b) => b.bonusCode === selectedBonus);
+      if (bonus) {
+        const amount = parseFloat(selectedAmount) || 0;
+        const bonusAmount = (amount * bonus.percentageValue) / 100;
+        return amount + bonusAmount;
+      }
     }
 
-    return amount;
+    // 2. Check if a Promotion bonus is selected (existing logic)
+    if (selectedBonus === "promotion" && promotionBonus) {
+      const amount = parseFloat(selectedAmount) || 0;
+      const bonusValue = promotionBonus.bonus_value || 0;
+
+      if (promotionBonus.bonus_type === "fixed") {
+        return amount + bonusValue;
+      } else if (promotionBonus.bonus_type === "percentage") {
+        const bonusAmount = (amount * bonusValue) / 100;
+        const maxLimit = promotionBonus.max_bonus_limit || Infinity;
+        const actualBonus = Math.min(bonusAmount, maxLimit);
+        return amount + actualBonus;
+      }
+    }
+
+    return parseFloat(selectedAmount) || 0;
   };
 
   const totalAmount = calculateTotalAmount();
@@ -306,6 +315,16 @@ const TabDeposit = ({
                       <option className="text-sm md:text-base" value="">
                         No Bonus
                       </option>
+                      {activeBonuses?.map((bonus) => (
+                        <option
+                          key={bonus._id}
+                          className="text-sm md:text-base"
+                          value={bonus.bonusCode}
+                        >
+                          {bonus.welcomeBonusName} ({bonus.percentageValue}% -{" "}
+                          {bonus.wageringRequirement}x)
+                        </option>
+                      ))}
                       {promotionBonus && (
                         <option
                           className="text-sm md:text-base"
@@ -315,7 +334,7 @@ const TabDeposit = ({
                         </option>
                       )}
                     </select>
-                    {selectedBonus === "promotion" && selectedAmount && (
+                    {selectedBonus && selectedAmount && (
                       <div className="mt-3 p-3 bg-green-900 bg-opacity-30 border border-green-500 rounded">
                         <p className="text-green-300 font-bold">
                           {language === "bn"
@@ -323,6 +342,13 @@ const TabDeposit = ({
                             : "Total Amount: "}
                           ৳{totalAmount.toFixed(2)}
                         </p>
+                        {selectedBonus !== "promotion" && (
+                          <p className="text-xs text-gray-300 mt-1">
+                            {language === "bn"
+                              ? `বোনাস: ৳${(totalAmount - parseFloat(selectedAmount)).toFixed(2)}`
+                              : `Bonus: ৳${(totalAmount - parseFloat(selectedAmount)).toFixed(2)}`}
+                          </p>
+                        )}
                       </div>
                     )}
                   </div>
@@ -392,6 +418,16 @@ const TabDeposit = ({
                       <option className="text-sm md:text-base" value="">
                         No Bonus
                       </option>
+                      {activeBonuses?.map((bonus) => (
+                        <option
+                          key={bonus._id}
+                          className="text-sm md:text-base"
+                          value={bonus.bonusCode}
+                        >
+                          {bonus.welcomeBonusName} ({bonus.percentageValue}% -{" "}
+                          {bonus.wageringRequirement}x)
+                        </option>
+                      ))}
                       {promotionBonus && (
                         <option
                           className="text-sm md:text-base"
@@ -401,7 +437,7 @@ const TabDeposit = ({
                         </option>
                       )}
                     </select>
-                    {selectedBonus === "promotion" && selectedAmount && (
+                    {selectedBonus && selectedAmount && (
                       <div className="mt-3 p-3 bg-green-900 bg-opacity-30 border border-green-500 rounded">
                         <p className="text-green-300 font-bold">
                           {language === "bn"
@@ -409,6 +445,13 @@ const TabDeposit = ({
                             : "Total Amount: "}
                           ৳{totalAmount.toFixed(2)}
                         </p>
+                        {selectedBonus !== "promotion" && (
+                          <p className="text-xs text-gray-300 mt-1">
+                            {language === "bn"
+                              ? `বোনাস: ৳${(totalAmount - parseFloat(selectedAmount)).toFixed(2)}`
+                              : `Bonus: ৳${(totalAmount - parseFloat(selectedAmount)).toFixed(2)}`}
+                          </p>
+                        )}
                       </div>
                     )}
                   </div>

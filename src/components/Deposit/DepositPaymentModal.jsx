@@ -96,9 +96,11 @@ const DepositPaymentModal = ({
         status: "Pending",
         transaction_type: "Deposit",
         description: `User deposit via ${selectedMethod}${
-          hasBonus ? ` with promotion bonus` : ""
+          hasBonus ? ` with promotion bonus` : selectedBonus ? ` with bonus code ${selectedBonus}` : ""
         }`,
-        bonus_applied: hasBonus,
+        bonusCode: selectedBonus !== "promotion" ? selectedBonus : null,
+        promotionId: selectedBonus === "promotion" ? promotionBonus?.id : null,
+        bonus_applied: hasBonus || (selectedBonus && selectedBonus !== "promotion"),
         original_amount: hasBonus
           ? parseInt(selectedAmount)
           : parseInt(displayAmount),
