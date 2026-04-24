@@ -38,9 +38,6 @@ const Games = () => {
       console.log("🚀 [DEBUG] handlePlay triggered for game:", game);
       setLaunching(game._id);
       console.log("=== PLAY GAME START ===");
-      
-      const gameIdentifier = game.gameId || game.gameUuid || game.game_id || game._id;
-      console.log("Step 1: Game Identifier to use:", gameIdentifier);
 
       // Step 1: Fetch latest user data to get updated balance
       const token = localStorage.getItem("authToken");
@@ -66,55 +63,73 @@ const Games = () => {
         console.warn("Failed to fetch fresh balance, using local:", currentBalance);
       }
 
-      // Step 2: Try to Fetch game details from Oracle API (non-fatal)
-      let oracleDetails = null;
-      console.log("Step 2: Attempting Oracle sync for ID:", gameIdentifier);
-      try {
-        const gameDetailsResponse = await fetch(
-          `https://api.oraclegames.live/api/games/${gameIdentifier}`,
-          {
-            headers: {
-              "x-dstgame-key": "b4fb7adb955b1078d8d38b54f5ad7be8ded17cfba85c37e4faa729ddd679d379",
-              "x-api-key": "a8b5ca55-56a5-418d-829d-6d00afd5945f",
-            },
-          }
-        );
-        if (gameDetailsResponse.ok) {
-          const gameDetailsData = await gameDetailsResponse.json();
-          if (gameDetailsData.success) {
-            oracleDetails = gameDetailsData.data;
-            console.log("✅ Oracle sync successful:", oracleDetails);
-          }
-        } else {
-          console.warn("⚠️ Oracle API returned 400/500, falling back to local DB data.");
+      // Step 2: Fetch game details from Oracle API using gameId (same as Jaya)
+      const gameId = game.gameId || game.gameUuid || game._id;
+      console.log("Step 1: Fetching game details for gameId:", gameId);
+
+      const gameDetailsResponse = await fetch(
+        `https://api.oraclegames.live/api/games/${gameId}`,
+        {
+          headers: {
+            "x-dstgame-key": "b4fb7adb955b1078d8d38b54f5ad7be8ded17cfba85c37e4faa729ddd679d379",
+            "x-api-key": "a8b5ca55-56a5-418d-829d-6d00afd5945f",
+          },
         }
-      } catch (err) {
-        console.warn("⚠️ Oracle fetch failed, using local DB data.", err);
+      );
+
+      console.log("Step 1 Response Status:", gameDetailsResponse.status);
+      const gameDetailsData = await gameDetailsResponse.json();
+      console.log("Step 1 Response Data:", gameDetailsData);
+
+      if (!gameDetailsResponse.ok || !gameDetailsData.success) {
+        console.error("Step 1 Failed: Oracle API error");
+        throw new Error("Failed to fetch game details from Oracle API");
       }
 
-      // Step 3: Call our backend to get launch URL
-      // We use Oracle details if available, otherwise fallback to game object properties
+      const gameDetails = gameDetailsData.data;
+      console.log("Step 2: Game details from Oracle API:", gameDetails);
+
+      // Step 3: Validate required fields
+      console.log("Step 3: Validating required fields");
+      console.log("  - game_code:", gameDetails.game_code);
+      console.log("  - game_type:", gameDetails.game_type);
+      console.log("  - provider_code:", gameDetails.provider?.provider_code);
+
+      if (
+        gameDetails.game_code === undefined ||
+        gameDetails.game_code === null ||
+        !gameDetails.game_type ||
+        !gameDetails.provider?.provider_code
+      ) {
+        console.error("Step 3 Failed: Missing required fields");
+        throw new Error("Game is missing required fields");
+      }
+
+      // Step 4: Send to backend with all game details (matching Jaya flow)
       const playGamePayload = {
         username: getUsername(),
         money: parseInt(currentBalance, 10) || 50,
-        provider_code: oracleDetails?.provider?.provider_code || game.providerCode || game.provider?.providerCode || "",
-        game_code: oracleDetails?.game_code || game.gameCode || game.gameId || game.gameUuid || 0,
-        game_type: oracleDetails?.game_type || game.gameType || 0,
+        provider_code: gameDetails.provider.provider_code,
+        game_code: gameDetails.game_code || 0,
+        game_type: gameDetails.game_type || 0,
       };
 
-      console.log("Step 3: Sending payload to backend:", playGamePayload);
+      console.log("Step 4: Sending to /api/playgame with payload:", playGamePayload);
 
       const response = await api.post("/api/playgame", playGamePayload);
 
       if (response.data.success && response.data.gameUrl) {
+        console.log("Step 5: Game launch successful");
         console.log("Opening game URL:", response.data.gameUrl);
         window.open(response.data.gameUrl, "_blank");
       } else {
-        console.error("Backend returned error:", response.data);
+        console.error("Step 5 Failed: Response not ok or not successful");
+        console.error("Response data:", response.data);
         alert(response.data.message || "Failed to get game URL");
       }
     } catch (err) {
-      console.error("Critical Launch Error:", err);
+      console.error("=== PLAY GAME ERROR ===");
+      console.error("Error:", err);
       alert(err.response?.data?.message || err.message || "Error launching game. Please try again.");
     } finally {
       setLaunching(null);
