@@ -87,9 +87,12 @@ const DepositPaymentModal = ({
       }
 
       // Prepare transaction data
+      // IMPORTANT: Send only the ORIGINAL deposit amount, NOT the total with bonus.
+      // The backend calculates and tracks the bonus separately via bonusCode/promotionId.
+      // The bonus is released to the user's balance only after wagering requirements are met.
       const transactionData = {
-        user_id: userId, // Add user_id
-        amount: parseInt(displayAmount), // Use total amount (with bonus if selected)
+        user_id: userId,
+        amount: parseInt(selectedAmount), // Original deposit amount ONLY (not with bonus)
         wallet_provider: selectedMethod, // e.g., "bKash", "Nogod"
         transaction_id: formData.transactionId,
         wallet_number: userWalletNumber,
@@ -100,13 +103,6 @@ const DepositPaymentModal = ({
         }`,
         bonusCode: selectedBonus !== "promotion" ? selectedBonus : null,
         promotionId: selectedBonus === "promotion" ? promotionBonus?.id : null,
-        bonus_applied: hasBonus || (selectedBonus && selectedBonus !== "promotion"),
-        original_amount: hasBonus
-          ? parseInt(selectedAmount)
-          : parseInt(displayAmount),
-        bonus_amount: hasBonus
-          ? parseInt(displayAmount) - parseInt(selectedAmount)
-          : 0,
       };
 
       console.log("📤 Submitting transaction:", transactionData);

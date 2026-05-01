@@ -28,36 +28,54 @@ const TabDeposit = ({
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
   // Calculate total amount with bonus only when promotion bonus is selected
-  const calculateTotalAmount = () => {
+  // Calculate bonus information including turnover/wagering
+  const calculateBonusInfo = () => {
+    const amount = parseFloat(selectedAmount) || 0;
+    let bonusAmount = 0;
+    let wageringMultiplier = 0;
+    let bonusName = "";
+
     // 1. Check if a DepositBonus is selected (from the new model)
     if (selectedBonus && selectedBonus !== "promotion") {
       const bonus = activeBonuses?.find((b) => b.bonusCode === selectedBonus);
       if (bonus) {
-        const amount = parseFloat(selectedAmount) || 0;
-        const bonusAmount = (amount * bonus.percentageValue) / 100;
-        return amount + bonusAmount;
+        bonusAmount = (amount * bonus.percentageValue) / 100;
+        wageringMultiplier = bonus.wageringRequirement || 0;
+        bonusName = bonus.welcomeBonusName;
       }
     }
-
     // 2. Check if a Promotion bonus is selected (existing logic)
-    if (selectedBonus === "promotion" && promotionBonus) {
-      const amount = parseFloat(selectedAmount) || 0;
+    else if (selectedBonus === "promotion" && promotionBonus) {
       const bonusValue = promotionBonus.bonus_value || 0;
+      bonusName = language === "bn" ? "প্রমোশন বোনাস" : "Promotion Bonus";
 
       if (promotionBonus.bonus_type === "fixed") {
-        return amount + bonusValue;
+        bonusAmount = bonusValue;
       } else if (promotionBonus.bonus_type === "percentage") {
-        const bonusAmount = (amount * bonusValue) / 100;
+        const calculatedBonus = (amount * bonusValue) / 100;
         const maxLimit = promotionBonus.max_bonus_limit || Infinity;
-        const actualBonus = Math.min(bonusAmount, maxLimit);
-        return amount + actualBonus;
+        bonusAmount = Math.min(calculatedBonus, maxLimit);
       }
+      // Note: Promotions currently don't have a multiplier in the model, defaulting to 0
+      wageringMultiplier = 0;
     }
 
-    return parseFloat(selectedAmount) || 0;
+    const totalAmount = amount + bonusAmount;
+    // Calculation: (Deposit * 1x default) + (Bonus * Multiplier)
+    const turnoverAmount = (amount * 1) + (bonusAmount * wageringMultiplier);
+
+    return {
+      totalAmount,
+      bonusAmount,
+      turnoverAmount,
+      wageringMultiplier,
+      bonusName,
+      depositAmount: amount
+    };
   };
 
-  const totalAmount = calculateTotalAmount();
+  const bonusInfo = calculateBonusInfo();
+  const totalAmount = bonusInfo.totalAmount;
 
   // Create promotion bonus option label
   const getPromotionBonusLabel = () => {
@@ -336,19 +354,32 @@ const TabDeposit = ({
                     </select>
                     {selectedBonus && selectedAmount && (
                       <div className="mt-3 p-3 bg-green-900 bg-opacity-30 border border-green-500 rounded">
-                        <p className="text-green-300 font-bold">
-                          {language === "bn"
-                            ? "মোট পরিমাণ: "
-                            : "Total Amount: "}
-                          ৳{totalAmount.toFixed(2)}
-                        </p>
-                        {selectedBonus !== "promotion" && (
-                          <p className="text-xs text-gray-300 mt-1">
-                            {language === "bn"
-                              ? `বোনাস: ৳${(totalAmount - parseFloat(selectedAmount)).toFixed(2)}`
-                              : `Bonus: ৳${(totalAmount - parseFloat(selectedAmount)).toFixed(2)}`}
+                        <div className="flex justify-between items-center mb-1">
+                          <p className="text-green-300 font-bold">
+                            {language === "bn" ? "মোট পরিমাণ: " : "Total Amount: "}
                           </p>
-                        )}
+                          <p className="text-white font-bold">৳{bonusInfo.totalAmount.toFixed(2)}</p>
+                        </div>
+                        
+                        <div className="flex justify-between items-center text-xs mb-1">
+                          <p className="text-gray-300">
+                            {language === "bn" ? "বোনাস: " : "Bonus: "}
+                          </p>
+                          <p className="text-green-400">৳{bonusInfo.bonusAmount.toFixed(2)}</p>
+                        </div>
+
+                        <div className="flex justify-between items-center text-xs pt-1 border-t border-green-800">
+                          <p className="text-gray-300 font-semibold">
+                            {language === "bn" ? "টার্নওভার প্রয়োজন: " : "Turnover Required: "}
+                          </p>
+                          <p className="text-yellow-400 font-bold">৳{bonusInfo.turnoverAmount.toFixed(2)}</p>
+                        </div>
+                        
+                        <p className="text-[10px] text-gray-400 mt-1 italic">
+                          {language === "bn" 
+                            ? `*ডিপোজিট (১x) + বোনাস (${bonusInfo.wageringMultiplier}x) টার্নওভার`
+                            : `*Deposit (1x) + Bonus (${bonusInfo.wageringMultiplier}x) turnover`}
+                        </p>
                       </div>
                     )}
                   </div>
@@ -439,19 +470,32 @@ const TabDeposit = ({
                     </select>
                     {selectedBonus && selectedAmount && (
                       <div className="mt-3 p-3 bg-green-900 bg-opacity-30 border border-green-500 rounded">
-                        <p className="text-green-300 font-bold">
-                          {language === "bn"
-                            ? "মোট পরিমাণ: "
-                            : "Total Amount: "}
-                          ৳{totalAmount.toFixed(2)}
-                        </p>
-                        {selectedBonus !== "promotion" && (
-                          <p className="text-xs text-gray-300 mt-1">
-                            {language === "bn"
-                              ? `বোনাস: ৳${(totalAmount - parseFloat(selectedAmount)).toFixed(2)}`
-                              : `Bonus: ৳${(totalAmount - parseFloat(selectedAmount)).toFixed(2)}`}
+                        <div className="flex justify-between items-center mb-1">
+                          <p className="text-green-300 font-bold">
+                            {language === "bn" ? "মোট পরিমাণ: " : "Total Amount: "}
                           </p>
-                        )}
+                          <p className="text-white font-bold">৳{bonusInfo.totalAmount.toFixed(2)}</p>
+                        </div>
+                        
+                        <div className="flex justify-between items-center text-xs mb-1">
+                          <p className="text-gray-300">
+                            {language === "bn" ? "বোনাস: " : "Bonus: "}
+                          </p>
+                          <p className="text-green-400">৳{bonusInfo.bonusAmount.toFixed(2)}</p>
+                        </div>
+
+                        <div className="flex justify-between items-center text-xs pt-1 border-t border-green-800">
+                          <p className="text-gray-300 font-semibold">
+                            {language === "bn" ? "টার্নওভার প্রয়োজন: " : "Turnover Required: "}
+                          </p>
+                          <p className="text-yellow-400 font-bold">৳{bonusInfo.turnoverAmount.toFixed(2)}</p>
+                        </div>
+                        
+                        <p className="text-[10px] text-gray-400 mt-1 italic">
+                          {language === "bn" 
+                            ? `*ডিপোজিট (১x) + বোনাস (${bonusInfo.wageringMultiplier}x) টার্নওভার`
+                            : `*Deposit (1x) + Bonus (${bonusInfo.wageringMultiplier}x) turnover`}
+                        </p>
                       </div>
                     )}
                   </div>
