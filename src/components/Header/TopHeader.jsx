@@ -2,7 +2,8 @@ import { Link } from "react-router-dom";
 import Jayalogo from "../../assets/logo3.png";
 import Bdlogo from "../../assets/BDTHeader.svg";
 import { isAuthenticated, logout } from "../../utils/auth";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { UserContext } from "../../Context/UserContext";
 
 const TopHeader = ({
   amount,
@@ -15,6 +16,8 @@ const TopHeader = ({
   siteSettings,
 }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const userContextValue = useContext(UserContext);
+  const userData = userContextValue?.userData;
 
   // Check authentication status on component mount and when localStorage changes
   useEffect(() => {
@@ -93,33 +96,40 @@ const TopHeader = ({
         className="hidden lg:flex space-x-2 items-center text-white font-sans text-sm"
         style={{ maxWidth: "1400px" }}
       >
-        <div className="flex flex-row gap-2 items-center">
-          <h3 className="text-lg">{text[language].wallet}</h3>
-          <span className="text-lg">
-            ৳ {amount !== null ? amount.toFixed(2) : "*.*"}
-          </span>
+        {isLoggedIn && (
+          <div className="flex flex-row gap-2 items-center">
+            <h3 className="text-lg">{text[language].wallet}</h3>
+            <span className="text-lg">
+              ৳{" "}
+              {userData?.balance !== null && userData?.balance !== undefined
+                ? userData.balance.toFixed(2)
+                : amount !== null
+                  ? amount.toFixed(2)
+                  : "*.*"}
+            </span>
 
-          <button onClick={handleClick}>
-            <svg
-              className={`transition-transform duration-300 ${
-                isHovered ? "rotate-180" : ""
-              }`}
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              width="20"
-              height="auto"
-              onMouseEnter={() => setIsHovered(true)}
-              onMouseLeave={() => setIsHovered(false)}
-            >
-              <path fill="none" d="M0 0h24v24H0z" />
-              <path
-                stroke={isHovered ? "#FFFFFF" : "#FFFFFF"}
-                strokeWidth="1.5"
-                d="M12 4V1l-4 4 4 4V6c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H6c0 3.87 3.13 7 7 7s7-3.13 7-7-3.13-7-7-7z"
-              />
-            </svg>
-          </button>
-        </div>
+            <button onClick={handleClick}>
+              <svg
+                className={`transition-transform duration-300 ${
+                  isHovered ? "rotate-180" : ""
+                }`}
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                width="20"
+                height="auto"
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+              >
+                <path fill="none" d="M0 0h24v24H0z" />
+                <path
+                  stroke={isHovered ? "#FFFFFF" : "#FFFFFF"}
+                  strokeWidth="1.5"
+                  d="M12 4V1l-4 4 4 4V6c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H6c0 3.87 3.13 7 7 7s7-3.13 7-7-3.13-7-7-7z"
+                />
+              </svg>
+            </button>
+          </div>
+        )}
 
         {/* <button
           onClick={() => setIsOpenModal(true)}
@@ -136,50 +146,65 @@ const TopHeader = ({
           </button>
         </Link> */}
 
-        <Link to="/amanot">
-          <button
-            className="px-4 py-1 text-lg rounded-sm"
-            style={{
-              backgroundColor: loginButtonBg,
-              color: loginButtonTextColor,
-            }}
-          >
-            {text[language].deposit}
-          </button>
-        </Link>
-        <Link to="/information">
-          <button
-            className="px-4 py-1 hover:border rounded-lg transition-all duration-300 ease-out text-lg"
-            style={{
-              color: headerTextColor,
-              borderColor: siteSettings?.webMenu?.hoverColor || "#09bda2",
-            }}
-          >
-            {text[language].profile}
-          </button>
-        </Link>
         {isLoggedIn ? (
-          <button
-            onClick={handleLogout}
-            className="px-4 py-1 hover:border rounded-lg text-lg"
-            style={{
-              color: headerTextColor,
-              borderColor: siteSettings?.webMenu?.hoverColor || "#09bda2",
-            }}
-          >
-            {text[language].logout}
-          </button>
+          <>
+            <Link to="/amanot">
+              <button
+                className="px-4 py-1 text-lg rounded-sm"
+                style={{
+                  backgroundColor: loginButtonBg,
+                  color: loginButtonTextColor,
+                }}
+              >
+                {text[language].deposit}
+              </button>
+            </Link>
+            <Link to="/information">
+              <button
+                className="px-4 py-1 hover:border rounded-lg transition-all duration-300 ease-out text-lg"
+                style={{
+                  color: headerTextColor,
+                  borderColor: siteSettings?.webMenu?.hoverColor || "#09bda2",
+                }}
+              >
+                {text[language].profile}
+              </button>
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="px-4 py-1 hover:border rounded-lg text-lg"
+              style={{
+                color: headerTextColor,
+                borderColor: siteSettings?.webMenu?.hoverColor || "#09bda2",
+              }}
+            >
+              {text[language].logout}
+            </button>
+          </>
         ) : (
-          <button
-            onClick={() => setIsOpenModal(true)}
-            className="px-4 py-1 hover:border rounded-lg text-lg"
-            style={{
-              color: headerTextColor,
-              borderColor: siteSettings?.webMenu?.hoverColor || "#09bda2",
-            }}
-          >
-            {text[language].login}
-          </button>
+          <>
+            <button
+              onClick={() => setIsOpenModal(true)}
+              className="border px-4 py-1 rounded-lg text-lg hover:opacity-80 transition"
+              style={{
+                color: headerTextColor,
+                borderColor: siteSettings?.webMenu?.hoverColor || "#09bda2",
+              }}
+            >
+              {text[language].login}
+            </button>
+            <Link to="/nibondon">
+              <button
+                className="px-4 py-1 text-lg rounded-sm"
+                style={{
+                  backgroundColor: signupButtonBg,
+                  color: loginButtonTextColor,
+                }}
+              >
+                {text[language].register}
+              </button>
+            </Link>
+          </>
         )}
 
         <div>

@@ -8,9 +8,9 @@ import Login from "../components/Header/LoginModal/Login";
 import ForgetPassword from "../components/Header/LoginModal/ForgetPassword";
 import Loader from "../components/Loader/Loader";
 import api from "../config/api";
-import { applyThemeColors } from "../utils/settings"; // Import theme utility
-import useSiteSettingsStore from "../store/siteSettingsStore"; // Import zustand store
-import ErrorBoundary from "../components/ErrorBoundary"; // Import ErrorBoundary
+import { applyThemeColors } from "../utils/settings";
+import useSiteSettingsStore from "../store/siteSettingsStore";
+import ErrorBoundary from "../components/ErrorBoundary";
 
 const MainLayout = () => {
   const navigation = useNavigation(); // 👈 detect if route is loading

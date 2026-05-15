@@ -1,6 +1,7 @@
 import { useContext, useState, createContext, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import axios from "axios";
+import { UserContext } from "../Context/UserContext";
 import iconDeposit from "../assets/profile-deposit.png";
 import iconWithdraw from "../assets/profile-withdraw.png";
 import iconBonus from "../assets/profile-bonus.png";
@@ -46,8 +47,13 @@ export const ReferralContext = createContext();
 const MainProfile = ({ children }) => {
   // Accept children prop
   const { language } = useContext(LanguageContext);
+  const userContextValue = useContext(UserContext);
+  const userData = userContextValue?.userData;
+  const fetchUserData = userContextValue?.fetchUserData;
   const navigate = useNavigate();
-  const [balance, setBalance] = useState(Math.floor(Math.random() * 1000)); // Initial Balance
+
+  // User data state
+  const [balance, setBalance] = useState(0);
 
   const [loading, setLoading] = useState(false);
   const [showBalance, setShowBalance] = useState(false);
@@ -83,6 +89,14 @@ const MainProfile = ({ children }) => {
     fetchContactUrls();
   }, []);
 
+  // Fetch logged-in user data from API
+  useEffect(() => {
+    if (userData) {
+      setBalance(userData.balance || 0);
+      console.log("✅ User data updated:", userData);
+    }
+  }, [userData]);
+
   // Fetch APK download URL from API
   useEffect(() => {
     const fetchApkUrl = async () => {
@@ -105,11 +119,11 @@ const MainProfile = ({ children }) => {
   }, []);
 
   const reloadBalance = () => {
-    setLoading(true); // Start loading
+    setLoading(true);
     setTimeout(() => {
-      setBalance(Math.floor(Math.random() * 1000)); // Generate new random balance
-      setLoading(false); // Stop loading
-    }, 1500); // Simulate a delay (1.5s)
+      fetchUserData();
+      setLoading(false);
+    }, 1500);
   };
 
   const toggleBalanceVisibility = () => {
@@ -610,7 +624,11 @@ const MainProfile = ({ children }) => {
   const data = language === "bn" ? dataBn : dataEn;
   return (
     <ReferralContext.Provider
-      value={{ referralData, loading: useReferralStore.getState().loading }}
+      value={{
+        referralData,
+        loading: useReferralStore.getState().loading,
+        userData,
+      }}
     >
       <AnimatePresence>
         <motion.div

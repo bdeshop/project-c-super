@@ -12,7 +12,7 @@ export const useGameCategories = () => {
     const fetchCategories = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${API_BASE_URL}/game-categories`);
+        const response = await fetch(`${API_BASE_URL}/api/game-categories`);
         if (!response.ok) throw new Error("Failed to fetch categories");
         const data = await response.json();
         setCategories(data.categories || []);
