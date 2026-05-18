@@ -17,24 +17,32 @@ import api, { BASE_URL } from "../config/api";
 const Games = () => {
   const { language } = useContext(LanguageContext);
   const { setIsOpenModal } = useOutletContext();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const [launching, setLaunching] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedProviders, setSelectedProviders] = useState([]);
 
   const providerId = searchParams.get("provider");
   const categoryId = searchParams.get("category");
-  const providerName = searchParams.get("providerName");
 
   const { categories } = useGameCategories();
   const { games, loading, error } = useGamesByProvider(providerId, categoryId);
 
   const category = categories.find((c) => c._id === categoryId);
-  const displayTitle =
-    providerName ||
-    (category
-      ? language === "en"
-        ? category.nameEnglish
-        : category.nameBangla
-      : "Games");
+
+  // Get providers for current category
+  const categoryProviders = category?.providers || [];
+
+  // Filter games based on search and selected providers
+  const filteredGames = games.filter((game) => {
+    const matchesSearch =
+      game.nameEnglish.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      game.nameBangla.toLowerCase().includes(searchQuery.toLowerCase());
+
+    if (selectedProviders.length === 0) return matchesSearch;
+    return matchesSearch && selectedProviders.includes(game.provider._id);
+  });
 
   const handlePlay = async (game) => {
     if (!isAuthenticated()) {
@@ -179,90 +187,154 @@ const Games = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 p-4 md:p-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
-            {displayTitle}
-          </h1>
-          <p className="text-gray-400">
-            {games.length}{" "}
-            {language === "en" ? "games available" : "গেম উপলব্ধ"}
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800">
+      {/* Banner with Category Image - Fully Responsive */}
+      {category && (
+        <div className="relative w-full h-40 sm:h-48 md:h-56 lg:h-72 xl:h-80 overflow-hidden bg-slate-700">
+          <img
+            src={category.image}
+            alt={category.nameEnglish}
+            className="w-full h-full object-cover object-center"
+            loading="lazy"
+          />
+          {/* Optional: Dark overlay for better text readability if needed */}
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent"></div>
         </div>
+      )}
 
+      <div className="bg-slate-800/80 backdrop-blur-sm border-b border-slate-700">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6">
+          {/* Search Bar */}
+          <div className="mb-4 sm:mb-6">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder={language === "en" ? "Search Games" : "গেম খুঁজুন"}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-slate-700 text-white placeholder-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm sm:text-base"
+              />
+              <span className="absolute right-3 top-2.5 sm:top-3 text-gray-400">
+                🔍
+              </span>
+            </div>
+          </div>
+
+          {/* Provider Filter Buttons */}
+          {categoryProviders.length > 0 && (
+            <div className="flex flex-wrap gap-2 overflow-x-auto pb-2 -mx-3 sm:-mx-4 md:-mx-6 lg:-mx-8 px-3 sm:px-4 md:px-6 lg:px-8">
+              {categoryProviders.map((provider) => (
+                <button
+                  key={provider._id}
+                  onClick={() => {
+                    if (selectedProviders.includes(provider._id)) {
+                      setSelectedProviders(
+                        selectedProviders.filter((id) => id !== provider._id),
+                      );
+                    } else {
+                      setSelectedProviders([
+                        ...selectedProviders,
+                        provider._id,
+                      ]);
+                    }
+                  }}
+                  className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-semibold text-xs sm:text-sm whitespace-nowrap transition-all flex-shrink-0 ${
+                    selectedProviders.includes(provider._id)
+                      ? "bg-cyan-500 text-white"
+                      : "bg-slate-700 text-gray-300 hover:bg-slate-600"
+                  }`}
+                >
+                  {provider.name}
+                </button>
+              ))}
+              {selectedProviders.length > 0 && (
+                <button
+                  onClick={() => setSelectedProviders([])}
+                  className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-semibold text-xs sm:text-sm bg-slate-600 text-gray-300 hover:bg-slate-500 whitespace-nowrap flex-shrink-0"
+                >
+                  {language === "en" ? "Clear" : "সাফ করুন"}
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-6 sm:py-8">
         {/* Games Grid */}
-        {games.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-gray-400 text-lg">
-              {language === "en" ? "No games found" : "কোন গেম পাওয়া যায়নি"}
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            {games.map((game) => (
-              <div
-                key={game._id}
-                className="group relative overflow-hidden rounded-lg bg-slate-700 hover:bg-slate-600 transition-all duration-300 cursor-pointer transform hover:scale-105"
-              >
-                {/* Game Image */}
-                <div className="relative w-full aspect-square overflow-hidden">
-                  <img
-                    src={game.image}
-                    alt={game.nameEnglish}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                  />
-                  {/* Overlay */}
-                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300 flex items-center justify-center">
-                    <button
-                      onClick={() => handlePlay(game)}
-                      disabled={launching === game._id}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold disabled:bg-gray-500"
-                    >
-                      {launching === game._id
-                        ? language === "en"
-                          ? "Launching..."
-                          : "চালু হচ্ছে..."
-                        : language === "en"
-                          ? "Play"
-                          : "খেলুন"}
-                    </button>
+        <div className="mb-8">
+          {filteredGames.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-400 text-base sm:text-lg">
+                {language === "en" ? "No games found" : "কোন গেম পাওয়া যায়নি"}
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3 md:gap-4">
+              {filteredGames.map((game) => (
+                <div
+                  key={game._id}
+                  className="group relative overflow-hidden rounded-lg bg-slate-700 hover:bg-slate-600 transition-all duration-300 cursor-pointer transform hover:scale-105"
+                >
+                  {/* Game Image */}
+                  <div className="relative w-full aspect-square overflow-hidden">
+                    <img
+                      src={game.image}
+                      alt={game.nameEnglish}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      loading="lazy"
+                    />
+                    {/* Overlay */}
+                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300 flex items-center justify-center">
+                      <button
+                        onClick={() => handlePlay(game)}
+                        disabled={launching === game._id}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-semibold text-xs sm:text-sm disabled:bg-gray-500"
+                      >
+                        {launching === game._id
+                          ? language === "en"
+                            ? "Launching..."
+                            : "চালু হচ্ছে..."
+                          : language === "en"
+                            ? "Play"
+                            : "খেলুন"}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Game Info */}
+                  <div className="p-2 sm:p-3">
+                    <h3 className="text-white font-semibold text-xs sm:text-sm truncate">
+                      {language === "en" ? game.nameEnglish : game.nameBangla}
+                    </h3>
+                    <p className="text-gray-400 text-xs mt-1 truncate">
+                      {game.gameUuid}
+                    </p>
+
+                    {/* Tags */}
+                    <div className="flex gap-1 mt-2 flex-wrap">
+                      {game.isHot && (
+                        <span className="text-xs bg-red-500 text-white px-1.5 py-0.5 rounded">
+                          🔥 Hot
+                        </span>
+                      )}
+                      {game.isNewGame && (
+                        <span className="text-xs bg-green-500 text-white px-1.5 py-0.5 rounded">
+                          ✨ New
+                        </span>
+                      )}
+                      {game.isLobby && (
+                        <span className="text-xs bg-blue-500 text-white px-1.5 py-0.5 rounded">
+                          ⭐ Lobby
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
-
-                {/* Game Info */}
-                <div className="p-3">
-                  <h3 className="text-white font-semibold text-sm truncate">
-                    {language === "en" ? game.nameEnglish : game.nameBangla}
-                  </h3>
-                  <p className="text-gray-400 text-xs mt-1 truncate">
-                    {game.gameUuid}
-                  </p>
-
-                  {/* Tags */}
-                  <div className="flex gap-1 mt-2 flex-wrap">
-                    {game.isHot && (
-                      <span className="text-xs bg-red-500 text-white px-2 py-1 rounded">
-                        🔥 Hot
-                      </span>
-                    )}
-                    {game.isNewGame && (
-                      <span className="text-xs bg-green-500 text-white px-2 py-1 rounded">
-                        ✨ New
-                      </span>
-                    )}
-                    {game.isLobby && (
-                      <span className="text-xs bg-blue-500 text-white px-2 py-1 rounded">
-                        ⭐ Lobby
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
