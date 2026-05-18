@@ -130,6 +130,32 @@ const MainProfile = ({ children }) => {
   const toggleBalanceVisibility = () => {
     setShowBalance((prev) => !prev); // Toggle show/hide
   };
+
+  const commonIconClass =
+    "h-10 w-10 lg:h-11 lg:w-11 object-contain shrink-0 transition-transform duration-200 group-hover:scale-110";
+
+  const commonLabelClass =
+    "mt-2 text-center text-[11px] font-medium leading-tight text-white/90 lg:text-xs";
+
+  const normalizeProfileData = (sections) =>
+    sections.map((section) => ({
+      ...section,
+      titleClass:
+        section.titleClass || "text-white text-sm font-semibold tracking-wide",
+      sectionClass:
+        `${section.sectionClass || ""} rounded-2xl border border-white/10 bg-white/[0.04] p-3 shadow-lg shadow-black/20 backdrop-blur-sm`.trim(),
+      gridClass: `${section.gridClass || ""} gap-3 lg:gap-4`
+        .replace(/\s+/g, " ")
+        .trim(),
+      items: section.items.map((item) => ({
+        ...item,
+        imgClass: commonIconClass,
+        labelClass: item.labelClass?.includes("whitespace-nowrap")
+          ? `${commonLabelClass} whitespace-nowrap`
+          : commonLabelClass,
+      })),
+    }));
+
   const dataBn = [
     {
       title: "তহবিল",
@@ -410,13 +436,6 @@ const MainProfile = ({ children }) => {
           imgClass: "w-[25%]",
           labelClass: "text-white text-xs lg:text:md",
         },
-        {
-          imgSrc: iconVoucher,
-          label: "Referral Code",
-          path: "/referralcode",
-          imgClass: "w-[25%]",
-          labelClass: "text-white text-xs lg:text:md",
-        },
       ],
     },
     {
@@ -622,7 +641,7 @@ const MainProfile = ({ children }) => {
       ],
     },
   ];
-  const data = language === "bn" ? dataBn : dataEn;
+  const data = normalizeProfileData(language === "bn" ? dataBn : dataEn);
   return (
     <ReferralContext.Provider
       value={{
@@ -637,14 +656,14 @@ const MainProfile = ({ children }) => {
           initial={{ opacity: 0, y: 50 }} // Entry Animation (নিচ থেকে আসবে)
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeInOut" }} // Smooth Timing
-          className="bg-black min-h-screen pb-10 relative overflow-hidden "
+          className="relative min-h-screen overflow-hidden bg-gradient-to-b from-[#080808] via-[#111111] to-black pb-10"
         >
-          <div className="mx-auto  lg:max-w-3xl min-h-screen   ">
+          <div className="mx-auto min-h-screen w-full max-w-3xl px-0">
             <Navigation navigate={navigate} />
 
             <Name />
 
-            <div className="px-3 lg:px-0">
+            <div className="space-y-3 px-3 lg:px-0">
               <VipLevel />
               <MainWallet
                 reloadBalance={reloadBalance}
