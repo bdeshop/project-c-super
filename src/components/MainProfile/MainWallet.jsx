@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { API_BASE_URL } from "../../config/constants";
 
 const MainWallet = ({
   reloadBalance,
@@ -24,7 +25,7 @@ const MainWallet = ({
       }
 
       const response = await axios.get(
-        "http://localhost:8000/api/users/balance",
+        `${API_BASE_URL}/api/users/balance`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

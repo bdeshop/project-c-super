@@ -53,7 +53,7 @@ const Header = ({ isModal, isOpenModal, setIsOpenModal }) => {
   // Build dynamic game categories menu only
   const dynamicMenuItems = gameCategories.map((category) => ({
     name: language === "en" ? category.nameEnglish : category.nameBangla,
-    path: `/games?category=${category._id}`,
+    path: `/api/games?category=${category._id}`,
     categoryId: category._id,
     mainIcons: (category.providers || []).map((provider) => ({
       id: provider._id,

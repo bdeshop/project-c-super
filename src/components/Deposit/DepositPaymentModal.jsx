@@ -54,7 +54,7 @@ const DepositPaymentModal = ({
       let userWalletNumber = "01712345678"; // Default fallback
 
       try {
-        const profileResponse = await api.get("/api/users/profile", {
+        const profileResponse = await api.get("/users/profile", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -111,7 +111,7 @@ const DepositPaymentModal = ({
       console.log("🎁 Total Amount (with bonus):", displayAmount);
 
       // Make API call to create transaction
-      const response = await api.post("/api/transactions", transactionData);
+      const response = await api.post("/transactions", transactionData);
 
       console.log("✅ Transaction created successfully:", response.data);
 

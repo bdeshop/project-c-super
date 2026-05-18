@@ -16,7 +16,7 @@ const Marquee = () => {
   useEffect(() => {
     const fetchBannerText = async () => {
       try {
-        const response = await api.get("/api/banner-text");
+        const response = await api.get("/banner-text");
         console.log("Banner text API response:", response.data);
         
         // Update the banner text with the API response

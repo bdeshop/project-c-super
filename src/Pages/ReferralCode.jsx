@@ -20,7 +20,7 @@ const ReferralCode = () => {
           useReferralStore.getState().setLoading(true);
 
           // Fetch referral info
-          const response = await api.get("/api/referral/info");
+          const response = await api.get("/referral/info");
 
           if (response.data.success && response.data.data.referralCode) {
             const data = {
@@ -31,7 +31,7 @@ const ReferralCode = () => {
           } else {
             // If no referral code exists, generate one
             const generateResponse = await api.post(
-              "/api/referral/generate-code"
+              "/referral/generate-code"
             );
             if (generateResponse.data.success) {
               const data = {

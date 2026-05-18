@@ -34,7 +34,7 @@ const TabWithdraw = ({
         const token = localStorage.getItem("authToken");
         if (!token) return;
 
-        const response = await api.get("/api/bonus-wagering/can-withdraw", {
+        const response = await api.get("/bonus-wagering/can-withdraw", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -64,7 +64,7 @@ const TabWithdraw = ({
     const fetchWithdrawalMethods = async () => {
       setWithdrawalLoading(true);
       try {
-        const response = await api.get("/api/withdrawal-methods");
+        const response = await api.get("/withdrawal-methods");
 
         if (response.data.success) {
           console.log("✅ Withdrawal methods fetched:", response.data.data);
@@ -89,7 +89,7 @@ const TabWithdraw = ({
       const token = localStorage.getItem("authToken");
       if (!token) return;
 
-      const response = await api.get("/api/users/balance", {
+      const response = await api.get("/users/balance", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -190,7 +190,7 @@ const TabWithdraw = ({
       console.log("📤 Selected Channel:", selectedChannel);
 
       const response = await api.post(
-        "/api/withdrawal-requests",
+        "/withdrawal-requests",
         requestData,
         {
           headers: {

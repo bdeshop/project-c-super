@@ -20,7 +20,7 @@ const Turnover = () => {
       }
 
       const status = activeTab === "running" ? "active" : "completed";
-      const response = await api.get(`/api/bonus-wagering/my-progress?status=${status}`, {
+      const response = await api.get(`/bonus-wagering/my-progress?status=${status}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

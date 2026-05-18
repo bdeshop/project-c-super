@@ -50,7 +50,7 @@ const Login = ({ isOpenModal, handleClose, setIsOpenForgetPassword }) => {
     setError("");
 
     try {
-      const response = await api.post("/api/users/login", {
+      const response = await api.post("/users/login", {
         email: formData.email,
         password: formData.password,
       });

@@ -9,7 +9,7 @@ const HomeVideo = () => {
     useEffect(() => {
         const fetchPromoData = async () => {
             try {
-                const response = await api.get("/api/promo-section");
+                const response = await api.get("/promo-section");
                 console.log("Promo section data:", response.data);
                 setPromoData(response.data.data.promoSection);
             } catch (error) {

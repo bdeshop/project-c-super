@@ -11,7 +11,7 @@ const UpcomingMatch = ({ language }) => {
   useEffect(() => {
     const fetchUpcomingMatches = async () => {
       try {
-        const response = await api.get("/api/upcoming-matches");
+        const response = await api.get("/upcoming-matches");
         console.log("Upcoming Matches API Response:", response.data);
 
         // Process API data

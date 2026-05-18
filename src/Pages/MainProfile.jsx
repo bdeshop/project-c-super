@@ -1,6 +1,7 @@
 import { useContext, useState, createContext, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import axios from "axios";
+import { API_BASE_URL } from "../config/constants";
 import { UserContext } from "../Context/UserContext";
 import iconDeposit from "../assets/profile-deposit.png";
 import iconWithdraw from "../assets/profile-withdraw.png";
@@ -72,7 +73,7 @@ const MainProfile = ({ children }) => {
   useEffect(() => {
     const fetchContactUrls = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/contact");
+        const response = await axios.get(`${API_BASE_URL}/api/contact`);
         if (response.data.success && response.data.data) {
           setContactUrls({
             service247Url: response.data.data.service247Url || "",
@@ -101,14 +102,14 @@ const MainProfile = ({ children }) => {
   useEffect(() => {
     const fetchApkUrl = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/apk");
+        const response = await axios.get(`${API_BASE_URL}/api/apk`);
         if (
           response.data.success &&
           response.data.data &&
           response.data.data.length > 0
         ) {
           const apkData = response.data.data[0];
-          setApkDownloadUrl(`http://localhost:8000${apkData.downloadUrl}`);
+          setApkDownloadUrl(`${API_BASE_URL}${apkData.downloadUrl}`);
         }
       } catch (error) {
         console.error("Error fetching APK URL:", error);

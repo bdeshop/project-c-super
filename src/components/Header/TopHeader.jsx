@@ -85,12 +85,14 @@ const TopHeader = ({
         color: headerTextColor,
       }}
     >
-      <img
-        src={logoSrc}
-        alt="Logo"
-        className="h-8 lg:h-12"
-        style={{ width: logoWidth }}
-      />
+      <Link to="/">
+        <img
+          src={logoSrc}
+          alt="Logo"
+          className="h-8 lg:h-12 cursor-pointer hover:opacity-80 transition"
+          style={{ width: logoWidth }}
+        />
+      </Link>
 
       <ul
         className="hidden lg:flex space-x-2 items-center text-white font-sans text-sm"

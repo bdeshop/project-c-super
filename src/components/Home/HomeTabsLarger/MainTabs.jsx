@@ -43,7 +43,7 @@ const MainTabs = () => {
   useEffect(() => {
     const fetchTopWinners = async () => {
       try {
-        const response = await api.get("/api/top-winners");
+        const response = await api.get("/top-winners");
         console.log("API Response:", response.data);
         
         // Process API data and organize by category

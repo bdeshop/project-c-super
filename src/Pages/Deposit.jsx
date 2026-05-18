@@ -74,7 +74,7 @@ const Deposit = () => {
           return;
         }
 
-        const response = await api.get("/api/users/balance", {
+        const response = await api.get("/users/balance", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -173,7 +173,7 @@ const Deposit = () => {
     const fetchPaymentMethods = async () => {
       setPaymentMethodsLoading(true);
       try {
-        const response = await api.get("/api/payment-methods");
+        const response = await api.get("/payment-methods");
         if (response.data.success) {
           setApiPaymentMethods(response.data.data);
           console.log("✅ Payment methods loaded:", response.data.data);
@@ -193,7 +193,7 @@ const Deposit = () => {
     const fetchActiveBonuses = async () => {
       setBonusesLoading(true);
       try {
-        const response = await api.get("/api/promotions/active-bonuses"); // Assuming this endpoint exists or will be created
+        const response = await api.get("/promotions/active-bonuses"); // Assuming this endpoint exists or will be created
         // Or if we use the new DepositBonus model:
         // const response = await api.get("/api/bonus-wagering/active-bonuses");
         

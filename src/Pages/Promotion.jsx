@@ -615,7 +615,7 @@ const Promotion = () => {
       try {
         setLoading(true);
         console.log("📡 Fetching promotions from API...");
-        const response = await api.get("/api/promotions");
+        const response = await api.get("/promotions");
         console.log("✅ Promotions API Response:", response.data);
 
         if (response.data.success && response.data.data) {

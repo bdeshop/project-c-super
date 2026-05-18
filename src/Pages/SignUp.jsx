@@ -3,7 +3,7 @@ import signUpImage from "../assets/bd-desktop-679a25600aae8.jpg";
 import { LanguageContext } from "../Context/LanguageContext";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { TbReload } from "react-icons/tb";
-import { Link, useOutletContext } from "react-router-dom";
+import { Link, useOutletContext, useNavigate } from "react-router-dom";
 import explannationImage from "../assets/white-exclamation-mark.png";
 import api from "../config/api";
 import useReferralStore from "../store/referralStore";
@@ -12,6 +12,7 @@ import RegistrationSuccessModal from "../components/Modals/RegistrationSuccessMo
 const SignUp = () => {
   const { setIsOpenModal } = useOutletContext();
   const { language } = useContext(LanguageContext);
+  const navigate = useNavigate();
   const [step, setStep] = useState(1); // <-- Step state added
 
   const [formData, setFormData] = useState({
@@ -167,7 +168,7 @@ const SignUp = () => {
     try {
       console.log("🔄 Starting auto-login after successful registration...");
 
-      const loginResponse = await api.post("/api/users/login", {
+      const loginResponse = await api.post("/users/login", {
         email: email,
         password: password,
       });
@@ -231,7 +232,7 @@ const SignUp = () => {
         referralCode: formData.referralCode || undefined,
       };
 
-      const response = await api.post("/api/users/signup", signupData);
+      const response = await api.post("/users/signup", signupData);
 
       if (response.data && response.data.success) {
         setSuccess(
@@ -265,6 +266,11 @@ const SignUp = () => {
             setStep(1);
 
             console.log("🎉 Registration and auto-login completed!");
+
+            // Redirect to information page after 2 seconds
+            setTimeout(() => {
+              navigate("/information");
+            }, 2000);
           }, 2000);
         } else {
           // If auto-login fails, show login modal

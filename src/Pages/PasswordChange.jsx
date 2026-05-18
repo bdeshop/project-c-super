@@ -1,6 +1,7 @@
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { API_BASE_URL } from "../config/constants";
 import { LanguageContext } from "../Context/LanguageContext";
 
 const PasswordChange = () => {
@@ -63,7 +64,7 @@ const PasswordChange = () => {
 
       // Make API request to change password
       const response = await axios.put(
-        "http://localhost:8000/api/users/change-password",
+        `${API_BASE_URL}/api/users/change-password`,
         {
           currentPassword: passwords[1],
           newPassword: passwords[2],

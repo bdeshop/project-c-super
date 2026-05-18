@@ -1,7 +1,8 @@
 import axios from "axios";
+import { API_BASE_URL } from "./constants";
 
-// Base URL for all API requests - now configurable via environment variable
-export const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+// Base URL for all API requests
+export const BASE_URL = `${API_BASE_URL}/api`;
 
 // Create axios instance with base configuration
 const api = axios.create({
@@ -23,7 +24,7 @@ api.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // Response interceptor for handling common responses
@@ -39,22 +40,23 @@ api.interceptors.response.use(
       // You can add redirect logic here if needed
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 // Referral API endpoints
 export const referralAPI = {
   // Get user's referral info
-  getReferralInfo: () => api.get("/api/referral/info"),
-  
+  getReferralInfo: () => api.get("/referral/info"),
+
   // Get user's referral transactions
-  getReferralTransactions: () => api.get("/api/referral/transactions"),
-  
+  getReferralTransactions: () => api.get("/referral/transactions"),
+
   // Withdraw referral earnings
-  withdrawReferralEarnings: (data) => api.post("/api/referral/withdraw", data),
-  
+  withdrawReferralEarnings: (data) => api.post("/referral/withdraw", data),
+
   // Admin: Update transaction status
-  updateTransactionStatus: (id, data) => api.put(`/api/referral/transactions/${id}`, data),
+  updateTransactionStatus: (id, data) =>
+    api.put(`/referral/transactions/${id}`, data),
 };
 
 export default api;

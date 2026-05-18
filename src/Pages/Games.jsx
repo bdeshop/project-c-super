@@ -1,9 +1,17 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useContext } from "react";
 import { useSearchParams } from "react-router-dom";
 import { LanguageContext } from "../Context/LanguageContext";
-import { useGamesByProvider, useGameCategories } from "../hooks/useGameCategories";
+import {
+  useGamesByProvider,
+  useGameCategories,
+} from "../hooks/useGameCategories";
 import { useOutletContext } from "react-router-dom";
-import { isAuthenticated, getUsername, getUserBalance, logout } from "../utils/auth";
+import {
+  isAuthenticated,
+  getUsername,
+  getUserBalance,
+  logout,
+} from "../utils/auth";
 import api, { BASE_URL } from "../config/api";
 
 const Games = () => {
@@ -43,7 +51,7 @@ const Games = () => {
       const token = localStorage.getItem("authToken");
       let currentBalance = getUserBalance();
       try {
-        const authResponse = await fetch(`${BASE_URL}/api/users/profile`, {
+        const authResponse = await fetch(`${BASE_URL}/users/profile`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -60,7 +68,10 @@ const Games = () => {
           console.log("Updated balance:", currentBalance);
         }
       } catch (e) {
-        console.warn("Failed to fetch fresh balance, using local:", currentBalance);
+        console.warn(
+          "Failed to fetch fresh balance, using local:",
+          currentBalance,
+        );
       }
 
       // Step 2: Fetch game details from Oracle API using gameId (same as Jaya)
@@ -71,10 +82,11 @@ const Games = () => {
         `https://api.oraclegames.live/api/games/${gameId}`,
         {
           headers: {
-            "x-dstgame-key": "b4fb7adb955b1078d8d38b54f5ad7be8ded17cfba85c37e4faa729ddd679d379",
+            "x-dstgame-key":
+              "b4fb7adb955b1078d8d38b54f5ad7be8ded17cfba85c37e4faa729ddd679d379",
             "x-api-key": "a8b5ca55-56a5-418d-829d-6d00afd5945f",
           },
-        }
+        },
       );
 
       console.log("Step 1 Response Status:", gameDetailsResponse.status);
@@ -114,9 +126,12 @@ const Games = () => {
         game_type: gameDetails.game_type || 0,
       };
 
-      console.log("Step 4: Sending to /api/playgame with payload:", playGamePayload);
+      console.log(
+        "Step 4: Sending to /api/playgame with payload:",
+        playGamePayload,
+      );
 
-      const response = await api.post("/api/playgame", playGamePayload);
+      const response = await api.post("/playgame", playGamePayload);
 
       if (response.data.success && response.data.gameUrl) {
         console.log("Step 5: Game launch successful");
@@ -130,7 +145,11 @@ const Games = () => {
     } catch (err) {
       console.error("=== PLAY GAME ERROR ===");
       console.error("Error:", err);
-      alert(err.response?.data?.message || err.message || "Error launching game. Please try again.");
+      alert(
+        err.response?.data?.message ||
+          err.message ||
+          "Error launching game. Please try again.",
+      );
     } finally {
       setLaunching(null);
       console.log("=== PLAY GAME END ===");

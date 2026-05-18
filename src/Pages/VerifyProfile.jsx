@@ -1,6 +1,7 @@
 import { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { API_BASE_URL } from "../config/constants";
 import memberLogo from "../assets/memberpic.svg";
 import MemberInfo from "../components/VerifyProfile/MemberInfo";
 import MemberInfoDetails from "../components/VerifyProfile/MemberInfoDetails";
@@ -55,7 +56,7 @@ const VerifyProfile = () => {
 
       // Make PUT request to update profile image
       const response = await axios.put(
-        `http://localhost:8000/api/users/profile/${userId}`,
+        `${API_BASE_URL}/api/users/profile/${userId}`,
         formDataToSend,
         {
           headers: {
@@ -117,7 +118,7 @@ const VerifyProfile = () => {
 
         // Make API request with Authorization header
         const response = await axios.get(
-          "http://localhost:8000/api/users/profile",
+          `${API_BASE_URL}/api/users/profile`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -194,7 +195,7 @@ const VerifyProfile = () => {
 
       // Make PUT request to update profile
       const response = await axios.put(
-        `http://localhost:8000/api/users/profile/${userId}`,
+        `${API_BASE_URL}/api/users/profile/${userId}`,
         formDataToSend,
         {
           headers: {

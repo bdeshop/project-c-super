@@ -11,7 +11,7 @@ const ImageSlider = () => {
   useEffect(() => {
     const fetchSliders = async () => {
       try {
-        const response = await api.get("/api/sliders");
+        const response = await api.get("/sliders");
         // Filter only active sliders
         const activeSliders = response.data.data.filter(
           (slider) => slider.status === "active"

@@ -29,7 +29,7 @@ const MainLayout = () => {
         }
 
         // Then fetch fresh settings from API
-        const response = await api.get("/api/theme-config");
+        const response = await api.get("/theme-config");
         if (response.data.success) {
           const settings = response.data.data;
           setSiteSettings(settings); // Set settings in zustand store

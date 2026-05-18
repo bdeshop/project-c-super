@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
-
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api";
+import { API_BASE_URL } from "../config/constants";
 
 export const useGameCategories = () => {
   const [categories, setCategories] = useState([]);
@@ -46,7 +44,7 @@ export const useProvidersByCategory = (categoryId) => {
       try {
         setLoading(true);
         const response = await fetch(
-          `${API_BASE_URL}/game-categories/${categoryId}`,
+          `${API_BASE_URL}/api/game-categories/${categoryId}`,
         );
         if (!response.ok) throw new Error("Failed to fetch providers");
         const data = await response.json();
@@ -84,7 +82,7 @@ export const useGamesByProvider = (providerId, categoryId) => {
         if (providerId) params.append("provider", providerId);
         if (categoryId) params.append("category", categoryId);
 
-        const response = await fetch(`${API_BASE_URL}/games?${params}`);
+        const response = await fetch(`${API_BASE_URL}/api/games?${params}`);
         if (!response.ok) throw new Error("Failed to fetch games");
         const data = await response.json();
         setGames(data.games || []);
